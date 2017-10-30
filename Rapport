@@ -1,0 +1,792 @@
+\documentclass[12pt]{article}
+
+\usepackage[frenchb, english]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{enumitem}
+\usepackage[left = 2cm, right = 2cm, textwidth = 500pt]{geometry}
+\usepackage{breakcites}
+\usepackage{array,multirow}
+\usepackage[font=small,labelfont=bf]{caption} 
+\usepackage{enumitem}
+\usepackage{forest}
+\usepackage{tikz}
+\usepackage{smartdiagram}
+\usesmartdiagramlibrary{additions}
+
+
+\smartdiagramset{module minimum width=3cm, module minimum height=2cm, text width=8em, font=\small, circular distance = 5cm}
+
+% Tikz options --------------------------------------------
+\usetikzlibrary{arrows,shapes,positioning,shadows,trees}
+\tikzset{
+  basic/.style  = {draw,  drop shadow, font=Helvetica, rectangle, align=flush center},
+  root/.style   = {basic, rounded corners=2pt, thin, align=flush center, fill=blue!30, text width=13em},
+  level 2/.style = {basic, rounded corners=8pt, align=flush center, fill=blue!20, text width=8em, minimum height=30pt},
+  level 3/.style = {basic,  align=flush left, fill=orange!10, text width=9em, rounded corners = 4pt}
+}
+%---------------------------------------------------------
+
+
+\newcommand{\Lim}[1]{\raisebox{0.5ex}{\scalebox{0.8}{$\displaystyle \lim_{#1}\;$}}}
+
+\title{Assurabilité des structures en bois laminé-croisé}
+\author{H. Cossette, M. A. Ennajeh, A. Koubaa, É. Marceau}
+\date{}
+
+\makeatletter
+\renewcommand\@biblabel[1]{\textbullet}
+\makeatother
+
+\begin{document}	
+
+\begin{titlepage}
+\centering
+\vspace*{-4cm}
+\hspace*{-2.1cm}
+\includegraphics[scale=.51]{pic_cover.jpg}
+	\\
+	{\huge\bfseries  Assurabilité des structures en bois laminé-croisé \par}
+	{\Large (Version draft) \par}
+	\vspace{1cm}
+	{\Large Mohamed-Amine \textsc{Ennajeh}, Anas \textsc{Koubaa}\par}
+	\vfill
+	\large Sous la supervision de \par
+	\Large Hélène \textsc{Cossette}, Étienne \textsc{Marceau} 
+
+	\vfill
+
+% Bottom of the page
+	Octobre 2017
+\end{titlepage}
+
+
+
+\pagenumbering{gobble}
+\ \newpage
+\section*{Résumé}
+
+Le secteur de construction canadien accueille aujourd'hui de plus en plus de projets de bâtiments en bois laminé-croisé (ou CLT pour Cross-Laminated Timber), notamment pour les grands édifices de plus de six étages. 
+
+Dans le cadre de la gestion des risques du chantier, les constructeurs cherchent à transférer ces derniers par le biais de l'assurance. Or, bien que les constructions en bois laminé-croisé sont jugées avoir des performances assez similaires aux structures non-combustibles, les assureurs ne partagent pas actuellement cet avis et chargent des primes élevées pour couvrir les différents risques de chantier pour ce matériau. 
+
+Après investigation auprès de plusieurs assureurs, il s'est avéré qu'il existe plusieurs causes derrière le tarif élevé des chantiers en CLT. D'abord, la phase de construction est considérée avoir un risque élevée, puisque les panneaux de CLT, non encore protégés, demeurent vulnérables aux sources de dégâts tels que le travail à chaud et les charges pluviales, pouvant occasionner d'importants coûts de remplacement. Aussi, le manque de données de sinistralité pour ce marché, vu que son développement soit assez récent, fait que les assureurs n'ont pas encore une idée claire quant au risque lié à un chantier en CLT. À cela s'ajoute le fait que le marché de construction en CLT soit encore de petite taille, ce qui le rend pas assez attrayant aux yeux des assureurs pour qu'ils prennent le risque d'assurer ce qui leur est inconnu. 
+
+Les pistes de solution au problème de manque de données de sinistralité, telles que la mise à jour de l'information concernant le risque ne question à partir de données provenant des tests de laboratoires ou de sources exogènes au Canada, sont selon les assureurs inadmissibles, car ces données ne pourraient pas substituer les conditions réelles d'un chantier établi dans le climat canadien.
+
+Finalement, on propose des solutions potentielles pour une anticipation de l'information sur le risque lié au chantiers en CLT. D'abord la mise au point et l'utilisation d'un générateur de scénarios d'incendie, pour pouvoir simuler des situations de périls de chantiers en CLT et ainsi approximer le risque lié à ces derniers. Aussi, conduire une étude similaire à celle réalisée actuellement par la National Fire Protection Association en collaboration avec la Property Insurance Research Group, permettrait de combiner les expertises de plusieurs intervenants afin de quantifier le risque de construction en CLT. Finalement, l'idée de conduire des tests de laboratoires avec pour objectif l'évaluation des coûts de remplacement de panneaux CLT après incendie pourrait rapprocher les assureurs du niveau effectif de pertes auxquelles ils feraient face en cas de couverture d'un chantier en CLT.
+
+
+
+\newpage
+\section*{Remerciements}
+(...)
+
+\newpage
+\tableofcontents
+
+\newpage
+\pagenumbering{arabic}
+
+\section{Introduction}
+
+La régie du bâtiment a introduit les structures en CLT dans le Code National du Bâtiment \cite{CNB}. Il est maintenant permis de construire un bâtiment à grande hauteur en bois massif sous certaines conditions stipulées à la division B du code. Ce nouveau système de construction présente des avantages aux niveaux économique et écologique.
+Cependant, plusieurs promoteurs se voient attribuer une grande prime, en comparaison aux structures en béton ou en acier, quand il est question d'assurer des structures en bois massif, causant l'abandon de plusieurs projets en CLT. Cette prime semble excessive pour les promoteurs de l'industrie de la construction en CLT et ne reflète donc pas adéquatement le risque inhérent à ce matériel de construction. Par contre, les assureurs jugent que la prime proposée est juste et correspond parfaitement au risque transféré.
+
+Une étude comparative \cite{GLOBEADVISORS1} entre les coûts d'assurance des bâtiments résidentiels de hauteur moyenne à charpente de bois et ceux des mêmes types de bâtiments mais construits en béton, a démontré qu'il y'a un écart important au niveau des taux de prime d'assurance entre les deux types de construction.
+
+Les données sur lesquelles est fondée l'étude intitulée « Insurance Costs for Mid-Rise Wood Frame and Concrete Residential Buildings » ont été tirées de publications pertinentes et de consultations avec des courtiers, des assureurs et des gestionnaires immobiliers. 
+
+Cette étude a montré que le taux d'assurance des constructeurs appliqué aux structures en béton est de 0.008\$ par tranche mensuelle de 100\$, alors que celui appliqué aux structures en bois est de 0.053\$. Ce qui démontre que le tau appliqué au chantier des bâtiments en bois est 7.5 fois plus élevé que celui appliqué au bâtiment en béton. Selon l'étude réalisée, cet écart flagrant de prime est dû à plusieurs facteurs. On cite entre autres :
+
+\begin{itemize}
+\item Risque d'incendie plus élevé : la combustibilité du bois a fait que la couverture contre l'incendie est 7 à 11 fois plus élevé pour les structures en bois que celles en béton. Les dommages causés par le feu à une structure de bois peuvent entraîner une perte totale, alors que la perte financière n'est que partielle pour une structure de béton. Seulement 1\% des immeubles en béton sont démolis à la suite d'un incendie, comparativement à 8\% des immeubles à charpente de bois.
+\item Risque de moisissure plus élevé : le risque de moisissure fait en sorte que le processus de contrôle de l'humidité est plus couteux pour les bâtiments à charpente de bois que ceux en béton. Au Canada, la principale cause des sinistres est les dégâts d'eaux. En effet, les dommages occasionnés par les fuites d'eau aux structures en bois se propagent plus rapidement et ont tendance à être détectés plus difficilement que celles occasionnées aux structures en béton. En Colombie-Britannique, le syndrome des leaky condos a engendré des réclamations de 4 Milliards de dollars pour dommages causés par des fuites d'eau de pluie. Ces dégâts, qui ont touché plusieurs condos en bois, ont engendré la plus vaste et la plus coûteuse opération de reconstruction de logements dans l'histoire du Canada.
+\end{itemize}
+
+À cause de ces deux facteurs, plusieurs compagnies d'assurance rechignent à assurer des constructions en bois. Quelques-unes refusent catégoriquement d'accepter le risque alors que d'autres limitent leur exposition au risque transféré. Le risque de dommages lors de la construction et après livraison du bâtiment est jugé trop élevé par les assureurs en vue de leur perception et de leur expérience avec les structures en bois.
+
+Chris Conway, président, Conseil Canadien du Béton, a aussi révélé dans \cite{GLOBEADVISORS2} que les coûts liés aux matériaux de construction, mais aussi les coûts à long terme lié à l'exploitation, l'entretien et le déclassement des bâtiments sont plus élevés pour les structures en bois que celle en béton, ce qui engendre un coût supplémentaire en matière d'assurance.
+
+Dans \cite{LeoRonken}, Leo Ronken, consultant senior en souscription, GEN RE, confirme que les assureurs ont une mauvaise perception des structures en bois à cause de sa performance quand il est exposé au feu et à l'eau. Cependant d'autres facteurs additionnels expliquent aussi bien cette mauvaise perception.
+
+La course effrénée des législateurs vers la construction écologique les aveugle quand il est question de fixer les standards à respecter en termes de sécurité, ce qui amplifie le risque de sinistre dans ce type de structure. En effet, de récents incendies dans des appartements en bois aux États-Unis ont montré que la vitesse de propagation du feu vers le sol est élevée si l'incendie n'est pas rapidement détecté et éteint. De surcroît, même si le feu est éteint avant que le bâtiment n'ait atteint la phase de démolition, cela ne signifie pas que la rigidité et la capacité de supporter les charges du bâtiment soit intacte, ou encore même une restauration ne pourra remédier à ce problème.
+
+Les gicleurs sont d'une nécessité absolue quand il s'agit de bâtiments construits avec des matériaux combustibles, mais ils peuvent entrainer des fuites d'eau susceptible d'engendrer des dégâts importants au bâtiment en question. Les dégâts occasionnés sont d'autant plus importants que la propagation est plus rapide. Or, on sait que l'eau pénètre plus rapidement et est plus difficile à détecter dans le bois que dans le béton, ce qui gonfle les réclamations des sinistres.
+
+Christian Dagenais, conseillé technique, FPInnovations, conclut dans \cite{cecobois} que la mauvaise expérience des assureurs avec les constructions en bois explique en partie le surplus de la prime octroyée aux constructions en bois. Cette mauvaise performance et expérience du bois vis-à-vis des périls s'expliquent entre autres par l'inexistence d'un plan de protection lors de la construction de petit bâtiment en bois, l'absence de certificats d'assurance des sous-traitants et la non-souscription des architectes et concepteurs à une assurance de responsabilité civile. Comme les assureurs s'entêtent à classer le CLT dans la catégorie des matériaux combustible, par conséquent, il se voit attribuer une grande prime qui ne reflète pas adéquatement son profil de risque. 
+En effet, une évaluation de quelques cas de bâtiments a révélé que les primes sont parfois jusqu'à 3 fois plus élevées lorsque le bâtiment est en charpente à ossature légère de bois comparativement à une charpente métallique ou en béton.​
+
+Face à ses divergences, la CIRCERB a jugé nécessaire de réaliser une étude portant sur la prime attribuée aux structures en CLT ainsi que sur la méthode actuarielle sur laquelle est basée cette tarification. Pour répondre aux attentes des partenaires, un grand travail de consultation et de collecte d'informations a été effectué auprès de différents intervenants afin de mettre la lumière sur la pratique de l'assurance construction au Canada ainsi que sur la classification adoptée par les assureurs dans l'optique de détecter les points de discorde entre les deux parties. Chaque partie a sa propre vision du risque inhérent à ces structures, les partenaires ont du mal à comprendre le processus de tarification en assurance construction, tandis que les assureurs ne semblent pas maitriser le risque lié au CLT et préfèrent ainsi adopter un tarif conservateur pour éviter de se retrouver avec des pertes inattendues impactant leurs bilans.
+
+\section{Le bois laminé-croisé}
+
+Le bois laminé-croisé est un matériau de construction qui a vu le jour en Autriche et en Allemagne au début des années 90. Ce matériau novateur a acquis de plus en plus de popularité dans plusieurs pays. Cet assemblage massif de pièces de bois est reconnu par ses grandes performances thermiques et acoustiques, son excellent comportement en situation d'incendie et sa forte résistances structurale. Bien qu'à présent le CLT est peu utilisé en Amérique du Nord, il pourrait devenir une solution au problème de densification durable des zones urbaines de par son aspect renouvelable et recyclable.
+
+La définition de la RBQ du bois laminé-croisé (cross-laminated timber, CLT), figurant dans \cite{RBQCLT}, est la suivante : 
+
+\textit{
+bois d'ingénierie structural préfabriqué conformément à la norme ANSI/APA PRG 320, à partir d'au moins 3 couches orthogonales de bois de sciage ou de bois de charpente composite, laminées à partir du collage des couches longitudinales et transversales à l'aide d'un adhésif structural afin de former un élément structural de forme rectangulaire, droit et plane destiné à des applications de toit, de plancher ou de mur.}
+
+Le CLT représente une alternative écologique aux matériaux de construction standards à savoir le béton et l'acier dans tous les types et grandeurs de bâtiments. En effet le béton se caractérise par sa durabilité mais nécessite une quantité énorme d'énergie de production. De surcroît l'utilisation du bois dans la construction permet d'absorber le CO2 présent dans l'atmosphère par la séquestration de celui-ci dans le bois.
+
+La construction des structures en CLT se fait beaucoup plus rapidement que ceux en béton. En effet, Selon M. Lamothe \cite{Lamothe}, ingénieur conseiller technique chez CECOBOIS, l'utilisation du bois pourrait permettre de réduire d'environ 50\% le temps de fabrication du bâtiment. Cela s'explique de un par le fait que le béton nécessite un temps de séchage assez long, et de deux par l'utilisation d'éléments préfabriqués en bois. Cette rapidité d'érection permet un gain de temps considérable pour les promoteurs.
+
+D'après les différents tests menés sur les panneaux de mur en CLT, on peut affirmer que le CLT offre une bonne performance sismique. En raison de leur rigidité et stabilité, les panneaux en CLT ne subissent pas de déformation suite aux charges latérales. Ceci dit, au Japon \cite{frangi2008natural}, un bâtiment de sept étages en CLT a été soumis à des essais sur la plus grande table de vibration au monde et a résisté à 14 secousses sismiques d'importance sans pratiquement subir de dommages. De Surcroit, Suite à des travaux effectués par FPInnovations, les mécanismes de fixation au sol, les ancrages et les connexions expliquent en grande partie la résistance, la rigidité et la résistance des structures en CLT. Ces derniers jouent un rôle primordial pour maintenir l'intégrité de la structure.
+
+L'une des plus grandes caractéristiques du bois est sa combustibilité, ce qui fait que les grandes structures en bois (6-12 étages) sont mal perçues et couteuses en termes d'assurabilité. Cependant des essais au feu ont démontré que le CLT a une capacité de résistance au feu pouvant atteindre 3 heures, souvent comparable à celle des autres matériaux de construction incombustibles. L'utilisation des panneaux en CLT pour les planchers et les murs porteurs offre une résistance au feu et permet de réduire la propagation d'un incendie au-delà de son point d'origine. Des tests conduits par FPInnovations \cite{CLThandbook} ont montré que l'indice de propagation des flammes à l'intérieur d'un bâtiment est faible par rapport à ceux des matériaux combustibles. Du fait de sa faible et prévisible vitesse de carbonisation, le CLT permet au bâtiment de conserver une partie importante de sa capacité structurale pour des durées prolongées lorsqu'il est exposé au feu. D'après FPInnovations, différents facteurs peuvent affecter la performance du CLT vis à vis d'un incendie, ainsi parmi ces facteurs on retrouve l'essence du bois, l'épaisseur du panneau, les protections utilisées et les dispositifs en matière de sécurité incendie.
+
+Le CLT se distingue par un niveau d'isolation acceptable et d'une capacité élevé à absorber une grande quantité d'humidité lorsequ'il est exposé à un mouillage excessif. Cependant FPInnovations \cite{CLThandbook} recommande quand même l'utilisation d'une isolation supplémentaire afin de conserver le bois dans un environnement intérieur stable, chaud et sec, et réduire ainsi le risque de dommage dû à l'humidité. Le CLT devra aussi être traité pour minimiser l'absorption de l'eau et la moisissure. Pour contrôler les eaux de pluie et l'humidité extérieure, FPInnovations recommande l'utilisation d'un parement muni d'un écran de pluie asséché et ventilé.
+
+En vue de toutes ses caractéristiques, la régie du bâtiment du Québec (RBQ) a émis des directives et guides pour la construction de bâtiments en bois massive d'au plus 12 étages \cite{RBQCLT}. En effet, il est possible d'ériger des bâtiments à charpente en bois d'au plus 12 étages mais en conformant à des conditions présentes à la division B du code \cite{CNB}.
+ 
+Actuellement, tout promoteur envisageant de construire un bâtiment de grande hauteur en bois massif doit démontrer que les objectifs du code sont respectés. En vertu de l'article 127-128 de la loi sur le bâtiment \cite{article127}, la RBQ peut approuver « une méthode de conception, un procédé de construction de même que l'utilisation d'un matériau différent de ce qui est prévu à un code ou à un règlement adopté en vertu de la présente loi lorsqu'elle estime que leur qualité est équivalente à celle recherchée par les normes prévues à ce code ou à ce règlement ».  La RBQ autorise les concepteurs qui respectent les lignes directrices du guide à construire des bâtiments en bois massive. Afin de veiller à la sécurité des occupants et la qualité du bâtiment, les lignes directrices du guide émettent plusieurs règles et disposition à respecter en matière de sécurité incendie, de comportement structural et de durabilité des bâtiments en bois massive.
+
+Les panneaux CLT utilisés au Canada sont certifiés ANSI/APA PRG 320, cette norme \cite{PRG320} a pour objectif d'assurer des standards de performance pour ces panneaux. Elle fournit des exigences et des méthodes pour la qualification et l'assurance de la qualité pour le rendement des panneaux CLT destinés à être utilisé dans des applications de construction.
+
+\section{Risques et assurance en construction}
+
+\subsection{Les risques en construction}
+
+Durant la vie d'un chantier, le constructeur demeure exposé à une multitude de risques qui, en cas de survenance, peuvent impacter négativement le projet en question. Les conséquences étant principalement des pertes financières dues au défaut des biens du constructeur qu'il devrait remplacer, au dédommagement suite à un non-respect d'éventuels critères de qualité ou d'échéances, ou encore au déboursement d'indemnisations à des personnes tierces suite à des erreurs dont le constructeur est responsable.
+
+Il existe une multitude de risques auxquels un chantier est exposé, dont l'importance peut varier selon le contexte : type de construction, emplacement géographique, qualité de la gestion du projet, etc. Il n'existe donc pas de liste exhaustive des risques en construction valable pour tous les chantiers. On pourrait cependant faire un inventaire des risques fréquents dans la plupart des chantiers, surtout lorsqu'il s'agit d'un contexte géo-économique commun. Dans \cite{Marsh}, on propose une liste catégorisée des différents risques en construction au Canada, résumée dans la figure \ref{fig:risques}.
+
+\begin{center}
+\begin{figure}
+\begin{tikzpicture}[
+  level distance = 2cm,
+  level 1/.style={sibling distance=26mm},
+  edge from parent/.style={thick,draw}, 
+  child anchor=north, 
+  >=latex]
+  
+\scriptsize
+% root of the the initial tree, level 1
+\node[root][scale = 2] {\hspace{-37pt} Risques en construction}
+  child {node[level 2] (c1) {\hspace{-37pt} Risques de gestion générale}}
+  child {node[level 2] (c2) {\hspace{-37pt} Risques environnementaux}}
+  child {node[level 2] (c3) {\hspace{-37pt} Risques financiers}}
+  child {node[level 2] (c4) {\hspace{-37pt} Risques de gestion des actifs}}
+  child {node[level 2] (c5) {\hspace{-37pt} Risques pour le personnel}}
+  child {node[level 2] (c6) {\hspace{-37pt} Risque de conformité}}
+  child {node[level 2] (c7) {\hspace{-37pt} Risque de produits et services}};
+
+\tiny
+% The second level, relatively positioned nodes
+\begin{scope}[every node/.style={level 3}]
+
+\node [below of = c1, yshift=-70pt] (c11) {\hspace{-30pt}- Risque d’interruption des travaux \\ \vspace{4pt} - Risque lié à l’exécution par l’entrepreneur  \\ \vspace{4pt} - Risque de dépassement des coûts \\ \vspace{4pt} - Risque d’estimation \\ \vspace{4pt} - Risque lié aux ressources humaine \\ \vspace{4pt} - Risque lié aux relations de travail \\ \vspace{4pt} - Risque lié à la répartition du risque};
+
+
+\node [below of = c2, yshift=-15pt] (c21) {\hspace{-32pt} - Risque de changement de l’état du sol \\ \vspace{4pt} - Risque de pollution};
+
+\node [below of = c3, yshift=-8pt] (c31) {\hspace{-30pt}- Risque de défaut\\ \vspace{4pt} - Risque de taux d’intérêt};
+
+\node [below of = c4, yshift=-69pt] (c41) {\hspace{-30pt}- Risque d’accidents sur le chantier\\ \vspace{4pt} - Risque de fraude par des employés ou des tiers\\ \vspace{4pt} - Risque de catastrophe naturelle\\ \vspace{4pt} - Risque lié à \\ la chaîne d’approvisionnement\\ \vspace{4pt} - Risque de dommages matériels occasionnés à des tiers\\ \vspace{4pt} - Risque de vandalisme et de terrorisme};
+
+\node [below of = c5, yshift=-21pt] (c51) {\hspace{-30pt}-Risque lié à la santé et la sécurité\\ \vspace{4pt} - Risque lié à la sécurité du chantier\\ \vspace{4pt} - Risque de blessures à des tiers};
+
+\node [below of = c6, yshift=-4pt] (c61) {\hspace{-30pt}Risque législatif et réglementaire};
+
+\node [below of = c7, yshift=-10pt] (c71) {\hspace{-30pt}Risque de défaillance de produits ou de services};
+\end{scope}
+
+% lines from each level 1 node to every one of its "children"
+
+\foreach \value in {1}
+  \draw[-] (c1.270) -- (c1\value.north);
+
+\foreach \value in {1}
+  \draw[-] (c2.270) -- (c2\value.north);
+
+\foreach \value in {1}
+  \draw[-] (c3.270) -- (c3\value.north);
+  
+  \foreach \value in {1}
+  \draw[-] (c4.270) -- (c4\value.north);
+  
+  \foreach \value in {1}
+  \draw[-] (c5.270) -- (c5\value.north);
+  
+  \foreach \value in {1}
+  \draw[-] (c6.270) -- (c6\value.north);
+  
+  \foreach \value in {1}
+  \draw[-] (c7.270) -- (c7\value.north);
+\end{tikzpicture}
+\caption{Risques en construction} \label{fig:risques}
+\end{figure}
+\end{center}
+\normalsize
+
+\subsection{Gestion des risques en construction}
+
+Faisant face à une multitude de risques, le constructeur se doit d'établir une stratégie lui permettant de gérer son exposition à ces risques-là afin de mieux piloter ses flux de trésorerie. À cette fin, le constructeur est amené à identifier tous les risques concernant son projet, quantifier leurs impacts en termes de pertes financières et à définir des procédures lui permettant de contrôler et limiter ces dernières.
+
+Dans \cite{al1990systematic}, on propose cinq stratégies alternatives permettant au constructeur d'élaborer sa stratégie de gestion des risques :
+\begin{enumerate}
+\item \textbf{Évitement du risque} : La façon la plus radicale pour limiter l'exposition à un risque est de l'éviter. Bien que cette approche implique que le constructeur perd l'opportunité de réalisation de bénéfice, elle est parfois nécessaire pour demeurer prudent.
+\item \textbf{Limitation des pertes et prévention} : Des programmes de limitation des pertes et de prévention peuvent être mis en place afin de réduire la probabilité d'occurrence des périls ou leur sévérité. De tels programmes fortifient le système de gestion des risques pour le constructeur, vu qu'ils contribuent nettement dans la diminution de la prime d'assurance, et rendent la rétention des risques plus favorable.
+\item \textbf{Rétention du risque} : Retenir un risque est le fait de supporter toutes les pertes potentielles dues à un ou plusieurs risques par le constructeur lui-même. Cette approche s'avère parfois très efficace vu que le constructeur, ayant accumulé assez d'expérience, pourrait mieux gérer les pertes en question. Cependant, il faut distinguer deux types de rétention du risque : La rétention planifiée et celle non planifiée; on parle de rétention planifiée lorsque le constructeur connaît bien le risque auquel il est exposé et choisit de le retenir, car il juge qu'il est capable de le contrôler. La rétention non planifiée est la situation dans laquelle le constructeur ignore l'existence d'un risque, et le retient donc passivement. Ce cas de figure est souvent causé par une mauvaise identification des risques.
+\item \textbf{Transfert contractuel du risque aux non-assureurs} : Le constructeur peut, par le biais d'ententes avec les différents acteurs du cycle de production du bâtiment à construire, s'assurer contre des périls inattendus. Un exemple de ce type de transfert de risque étant l'éventuelle garantie d'un fournisseur pour des matières de construction durant la phase de livraison.    
+\item \textbf{Assurance} : L'assurance demeure le moyen le plus efficace pour gérer efficacement les risques auxquels s'expose un constructeur, puisqu'elle permet à ce dernier d'avoir un levier financier lui permettant de supporter des pertes pouvant dépasser les capacités de sa trésorerie. Contrairement au transfert contractuel du risque aux non-assureurs, l'assurance accorde plus de flexibilité quant au capital à assurer, puisque les compagnies d'assurance sont spécialisées dans la quantification de l'exposition à différents types risques ainsi que dans leur mutualisation.  
+\end{enumerate}
+
+\subsection{L'assurance en construction}
+
+L'activité assurantielle est présente et effective dans le secteur de la construction, puisque tout projet requiert d'avoir une couverture contre divers risques pouvant compromettre son bon déroulement. Les risques en question font en sorte que le projet soit exposé à des effets, dont la réversibilité demande le déboursement de frais, exorbitants dans un nombre de cas, que la trésorerie du constructeur pourrait ne pas supporter.
+
+\subsection{Le régime d'assurance construction}
+
+Selon \cite{regime}, chaque pays a son propre régime d'assurance construction. Il n'y a pas de modèle de base mais chaque pays essaie de protéger au mieux les nouveaux propriétaires de logement neuf contre les défaillances de construction. On recense trois principaux régimes :
+\begin{itemize}
+\item Les régimes où il y a une obligation législative pour les constructeurs de souscrire à une couverture d'assurance. Cette obligation est introduite via un texte de loi. Une assurance de responsabilité civile et assurance dommage ouvrage décennale sont obligatoires par exemple par la loi Spinetta en France.
+\item Les régimes où la responsabilité du constructeur est définie par la législation mais il n'existe pas d'obligation légale pour souscrire à une couverture d'assurance contre les défauts de construction. Cependant, dans certains pays (Autriche, Belgique...) les promoteurs souscrivent toujours à des couvertures d'assurance contre les vices de construction, tandis que dans d'autres (Portugal, Hongrie...) l'usage de l'assurance n'est pas fréquent.
+\item Les régimes où la responsabilité et les couvertures assurancielles correspondantes sont contractuelles. Par exemple, en Grande-Bretagne, la Common Law est une loi hybride assurant la coexistence des responsabilités contractuelles, délictuelles et obligations légales. La responsabilité contractuelle du constructeur vis-à-vis des acquéreurs commence au moment de la réception de la structure et s'étend sur 12 ans (« contract by deed ») ou 6 ans (« simple contract ») selon le type de contrat. Pour les logements, la loi introduit des obligations légales du constructeur envers les nouveaux propriétaires et ceux qui se succèdent après.
+\end{itemize}
+
+Au Québec, le régime est tout ou principalement contractuel. Le régime Québécois est à base législative pour garantir les droits de nouveaux acquéreurs car il existe des dispositifs de protection et d'indemnisation des particuliers quand ils se heurtent à des défauts de construction dans un logement construit ou acquis à titre individuel. Cependant, il n'y a pas d'obligation légale d'une assurance pour couvrir les frais liés à des imperfections de construction. Par contre, la pratique veut que les donneurs d'ouvrage exigent des entrepreneurs à souscrire à une police d'assurance, surtout quand il s'agit de grands projets.
+Au Québec le cautionnement pour la protection des acheteurs d'habitation fait office d'obligation de souscrire une assurance les protégeant contre la responsabilité du constructeur par rapport à des imperfections dans la construction achevée. 
+
+Pour les architectes, le même type de législation s'applique. Les associations provinciales d'architectures du Québec ont mis sur pied un programme d'assurance responsabilité professionnelles afin de garantir un certain niveau de qualité et de sécurité pour les nouveaux propriétaires. 
+
+\subsection{Couvertures générales en assurance construction}
+
+Les risques en construction sont divisés en deux catégories : Les risques de dommages à l'ouvrage (le chantier et les actifs matériels s'y trouvant) et les risques de responsabilité envers les personnes et biens, appartenant à une personne tierce, pouvant subir des dommages à cause de l'activité liée à l'ouvrage.
+
+Pour une application rigoureuse des couvertures, les assureurs mettent le point, lors de l'établissement des polices d'assurance, sur la distinction entre les événements déclenchés par l'occurrence d'un sinistre, dans lesquels la cause du sinistre doit avoir lieu durant la période de couverture, et ceux par la réclamation d'un sinistre, pour lesquels le sinistre doit être déclaré durant cette période.
+
+Il existe deux types de couvertures traditionnelles en assurance construction : L'assurance de l'ouvrage et la responsabilité civile. 
+
+Il est à noter qu'il existe une différence entre l'assurance construction et l'assurance habitation : L'assurance construction couvre les risque liés au chantier, et ceci depuis le début de ce dernier jusqu'à livraison du bâtiment, alors que l'assurance habitation ne prend effet qu'après livraison de ce dernier, et couvre les risques pouvant survenir durant l'utilisation des bâtiments. Pour une couverture par occurrence de sinistre, même les dégâts relevant de la responsabilité du constructeur sont dédommagés aux frais de l'assureur.
+
+\subsubsection{Assurance de l'ouvrage}
+
+Aussi appelée couverture tous risques, est l'assurance générale du chantier contre les différents dommages que ce dernier pourrait subir durant la phase de construction. Cette période s'étend en principe depuis le début du chantier jusqu'à livraison du bâtiment, quoiqu'elle pourrait s'étendre quelques années après cette date comme garantie de l'achèvement de ce dernier. Toutefois, le terme « tous risques » pourrait nuancer la considération des risques dans la couverture, spécifiquement sur les risques à inclure (ou à ne pas inclure) dans celle-ci. Les assureurs ont toujours tendance à se limiter aux dégâts touchants directement l'ouvrage, excluant ainsi les risques liés aux biens du maître d'œuvre. Pour plus de clarté au niveau légal, la limite de considération des risques est établie soit par des polices citant les risques inclus dans la couverture, soit par d'autres citant les risques exclus de celle-ci. Dans le premier cas, un risque est couvert s'il est clairement cité dans la police, alors que pour le deuxième cas tous les risques non figurants dans la police sont couverts.
+
+\subsubsection{Responsabilité civile générale}
+
+La couverture en responsabilité civile pour un constructeur constitue un engagement de la part de l'assureur à indemniser tout dégât, infligé à l'intégrité physique ou psychique d'une personne ou aux biens (matériels et immatériels) appartenant à une personne (physique ou morale) autre que l'(es) assuré(s), dû à la négligence de l'assuré ou celle des personnes sous responsabilité de ce dernier. À cet effet, l'assureur a l'obligation de couvrir tous les frais pour lesquels l'assuré serait engagé en vertu d'une compensation des dommages causés par un sinistre du type précité.
+
+Il est donc important pour l'assureur, en guise de défense contre la prise en charge de l'indemnisation de dommages, de vérifier les clauses de son engagement dans celle-ci, notamment le moment d'occurrence du sinistre, afin de valider son inclusion dans la période de couverture de la police. Bien que ce jugement relève des capacités de la cour, l'assureur conduit sa propre investigation pour une meilleure gestion du dossier.
+
+Comme pour l'assurance de l'ouvrage, les polices écrites par les assureurs excluent la couverture de certains risques, comme l'assurance de biens pour lesquels l'assuré a un intérêt ou encore des dommages causés par des travaux envisagés dans le chantier (par exemple la destruction non-accidentelle d'un bien publique).
+
+
+\section{Introduction à la tarification en assurance de dommages}
+
+Le métier de l'assurance consiste à accepter le transfert de risques de l'assuré vers l'assureur, qu'il devrait mutualiser et gérer afin d'honorer ses engagements futurs et, en plus, de réaliser des bénéfices. Ainsi, les compagnies d'assurance devraient avoir une vision claire des risques qu'elles souhaitent accepter dans leurs portefeuilles. Ceci dit, une quantification adéquate du risque accepté est vitale pour veiller à la rentabilité et la solvabilité de la compagnie d'assurance. Ainsi, une mauvaise estimation des engagements futurs peut nuire à la rentabilité de l'entreprise. En effet, une sous-estimation du risque peut mener à une ruine partielle ou totale de la compagnie, tandis qu'une surestimation ferait fuir les clients potentiels de l'assureur vers ses concurrents. Donc une tarification adéquate du risque est primordiale dans l'industrie de l'assurance. 
+
+Le principe du métier d'assurance est la collecte de rémunération en contrepartie d'une couverture contre diverses pertes financières causées par de l'aléa. Ceci dit, L'assureur est prêt à prendre le risque de couvrir les éventuelles pertes liées à l'objet assuré du moment qu'il juge que les chances de se retrouver avec aucun ou peu de dollars à payer soient assez bonnes. Par contre si la probabilité d'occurrence de sinistres graves est assez élevée, l'assureur pourrait refuser de couvrir le risque ou, dans le meilleur des cas, demander une prime qui soit aussi élevée. 
+
+Il faut bien faire la distinction, pour un risque donné, entre probabilité d'occurrence (appelée fréquence du sinistre) et  perte financière lors d'une seule occurrence (appelée sévérité du sinistre). Un risque à forte fréquence et faible sévérité et un autre à faible fréquence et forte sévérité sont tous les deux assurables, mais de manières différentes. Cependant, un risque à fortes fréquence et sévérité en même temps, considéré comme mauvais risque, repousse généralement les assureurs.
+
+\subsection{Prime commerciale}
+
+La prime commerciale, étant la prime que charge un assureur pour une police d'assurance d'un produit donné, est constituée des trois éléments suivants :
+
+La prime pure sert à financer les sinistres occasionnés par les assurés. D'autres frais viennent s'ajouter au montant de la prime pure pour donner lieu à la prime commerciale, c'est cette prime que l'assuré se verra charger. Ainsi la prime commerciale peut être décomposée en :
+
+\begin{itemize}
+\item \textbf{La prime technique :} Elle comprend la partie mathématique de la prime, englobant :
+\begin{itemize}
+\item \textbf{La prime pure :} représente la perte moyenne du contrat, calculée à partir des données historique que détient l'assureur;
+\item \textbf{Le chargement de sécurité :} consiste en un montant proportionnel à la prime pure, permettant de palier à toute éventualité d'écart entre le coût réel et le coût probable estimé;
+\end{itemize}
+\item \textbf{Les coûts de gestion :} permet de faire face aux dépenses de gestion relatifs à la police d'assurance. Ce chargement se voit diminuer des produits de placement.
+\end{itemize}
+
+La composition de la prime commerciale est représentée dans le tableau (\ref{table_prime})
+
+\begin{table}
+\begin{center}
+\begin{tabular}{|c|c|c|}\hline
+\multirow{5}{*}{Prime Commerciale} & \multirow{2}{*}{Prime technique} & Prime pure \\ \cline{3-3}
+    &  & Chargement de sécurité \\ \cline{2-3}
+    & \multirow{3}{*}{Coûts de gestion} & Coûts fixes \\ \cline{3-3}
+    &  & Coûts semi-variables \\ \cline{3-3}
+    &  & Coûts variables \\ \hline
+\end{tabular}
+\caption{Composition de la prime commerciale}\label{table_prime}
+\end{center}
+\end{table}
+
+
+\subsection{Données en assurance}
+
+Les données historiques des sinistres occupent une place primordiale dans la tarification en assurance dommage. En effet, les modèles de tarification reposent sur l'hypothèse que le futur est décrit par le passé. Cette hypothèse fondamentale fait en sorte qu'il existe un lien historique entre sinistres et primes. Ainsi lors de la tarification, l'actuaire a besoin de données fiables et suffisantes pour quantifier le risque transmis, l'Institut Canadien des Actuaires considèrent dans \cite{ICA} les données comme étant suffisantes « si elles comprennent tous les renseignements dont on a besoin pour effectuer le travail » et fiables « si cette information est exacte ». En utilisant les données, l'actuaire évalue le plus précisément possible le coût et la fréquence d'événements futurs incertains afin de fixer une juste prime.
+
+\subsection{Variables tarifaires en construction}
+Les variables utilisées dans le modèle GLM (voir (\ref{tarification}) généralement sélectionnées pour expliquer les coûts des sinistres dans un chantier de construction, sont des variables qui concernent:
+\begin{itemize}
+\item Le lieu géographique du bâtiment, résumant le contexte climatique dans lequel le chantier est établi
+\item Les matériaux utilisés pour les différentes composantes du bâtiment
+\item La durée du chantier
+\end{itemize}
+...
+\subsection{Modèles de tarification en assurance de dommages}
+\label{tarification}
+
+La tarification de l'assurance construction se fait à l'aide de méthodes actuarielles et statistiques très élaborées. Un des modèles les plus utilisés est le modèle linéaire généralisé, qui permet à la fois de modéliser des comportements non linéaires et des distributions de résidus non gaussiennes. Ce modèle a permis d'améliorer la qualité des modèles de prédiction du risque. Il permet d'expliquer la variable d'intérêt (Coût, fréquence) par plusieurs variables communément appelés variables tarifaires. En effet, une grande partie de la variabilité de la grandeur à expliquer doit être captée par un panier de variables, dans l'observation est accessible. 
+
+Dans le modèle linéaire généralisé, on modélise une fonction $g(.)$ de l'espérance de la variable à expliquer, appelée fonction de lien, et qui est de la forme 
+\begin{center}
+$g(E[Y])= \beta_{0} + \sum_{i=1}^{p} \beta_{i}X_{i}$,
+\end{center}
+où $X_i, i=1...p$ représentent les variables explicatives et $g(E[Y])$ le prédicateur linéaire. On souligne que la variable aléatoire $Y$ doit appartenir à une famille de lois de probabilité dite famille exponentielle. On revoie le lecteur à \cite{mccullagh1984generalized} pour plus de détails.
+
+\vspace{3mm}
+\underline{Estimation des paramètres}
+\vspace{2mm}
+
+L'estimation des paramètres d'un GLM se fait par maximum de vraisemblance. La fonction de vraisemblance étant
+\begin{center}
+$L(\beta_{0},..,\beta_{p})= \prod_{i=1}^{n} f(y_{i},\theta,\phi)$. 
+\end{center}
+On dérive par rapport aux coefficients pour trouver l'estimateur de maximum de vraisemblance de $\beta$.
+
+\vspace{3mm}
+\underline{Significativité des coefficients}
+\vspace{2mm}
+
+La significativité des coefficients associés aux variables explicatives peut être testée à l'aide du test de Wald, soit le test suivant:
+\begin{center}
+$H_{0}: \beta=0 \:  Vs \: H_{1}:\beta \neq 0 $.
+\end{center}
+Ainsi, la statistique de Wald s'écrit:
+\begin{center}
+$W=\frac{\hat{\beta}}{\hat{\sigma}(\hat{\beta})}$,
+\end{center}
+sous $H_{0},\: W \sim N(0,1)$.\\
+Au niveau de significativité $\alpha$: on rejette $H_{0}$ si W > $\phi(1-\alpha)$, où $\phi$ est la fonction de répartition d'une loi normale centrée et réduite.
+
+\vspace{3mm}
+\underline{Qualité du modèle}
+\vspace{2mm}
+
+La qualité du modèle est ensuite évaluée par le biais des statistiques suivantes :
+\begin{itemize}
+
+ \item Statistique de déviance: la déviance permet de comparer le modèle estimé avec le modèle saturé (modèle où il y a autant d'observations que de paramètres), où
+ \begin{center}
+ $D=-2(L-L_{sat}) \sim \mathcal{X}_{n-p-1}^{2}$.
+ \end{center}
+
+ \item Statistique de Pearson: elle permet de comparer les valeurs observées $y_{i}$ à leur prévision par le modèle. Cette statistique est définie par:
+ \begin{center}
+ $X_{pearson}^{2}=\sum_{i=1}^{n} \frac{y_{i}-\hat{\mu}_{i}}{\hat{\textsf{var}}(\hat{\mu}_{i})}\sim \mathcal{X}_{n-p-1}^{2}$.
+\end{center}  
+
+ \end{itemize}
+Si $D$ ou $X_{pearson}^{2}$ sont supérieures au quantile d'une loi Khi-carré à $n-p-1$ degrés de liberté d'ordre $1-\alpha$, alors le modèle est jugé de mauvaise qualité.
+
+\vspace{3mm}
+\underline{Sélection du modèle}
+\vspace{2mm}
+
+Selon le nombre de modèles candidats à mieux représenter le lien entre la variable cible et les variables explicative, on pourrait classer ces modèles avec les trois critères suivants :
+\begin{itemize}
+\item Le critère « LL » égal à -2ln($L$) avec $L$ est le maximum de vraisemblance.
+\item  Le critère « AIC » égal à -2ln($L$)+2$p$ ou $p$ est le nombre de variables
+explicatives.
+\item Le critère « BIC » égal à -2ln($L$)+ $p$ln($n$) ou $n$ est le nombre d'observations.
+\end{itemize}
+Plus ces critères sont petits, plus le modèle est considéré meilleur.
+
+Avec ces critères, on peut adopter tout schéma de comparaison des modèles pour sélectionner les variables les plus significatives. Parmi les schémas utilisés dans la pratique, on trouve les deux schémas séquentiels suivants :
+\begin{itemize}
+\item La méthode ascendante (Backward) : il s'agit de démarrer avec le modèle complet (c'est-à-dire toutes les variables ayant un effet significatif sur le risque) puis de retirer la variable la
+moins significative, autrement dit celle dont l'élimination entraîne la plus faible augmentation
+de la déviance.
+\item Dans la méthode ascendante (Forward) : il s'agit de rechercher la variable la plus significative au sens de la déviance pour un modèle
+linéaire généralisé. Partant de ce modèle à un facteur, nous cherchons ensuite la variable qui, associée à la première, explique le mieux la sinistralité et ainsi de suite.
+\end{itemize}
+
+\vspace{3mm}
+\underline{Validation du modèle}
+\vspace{2mm}
+
+Finalement vient l'étape de validation du modèle, généralement réalisée par analyse des résidus. Deux types de résidus sont usuellement considérés:
+\begin{itemize}
+\item Résidus de Pearson
+\begin{center}
+ $r_{i}^{p}= \frac{y_{i}-\hat{\mu}_{i}}{\hat{var}(\hat{\mu}_{i})}$.
+\end{center}  
+\item Résidus de déviance
+\begin{center}
+ $r_{i}^{d}= signe(y_{i}-\hat{\mu}_{i})\sqrt{d_{i}}$,
+\end{center}   
+où $d_{i}$ est la composante de la déviance induite par la $i^{ème}$ observations, ou $D=\sum_{i=1}^{n} d_{i}$.
+\end{itemize}
+
+La validité du modèle est jugée bonne si les résidus observés se situent autour de l'axe des abscisses et avec une variance constante, autrement dit si le nuage de points est de forme cylindrique autour de l'axe des abscisses.
+
+\subsection{Calcul du chargement de sécurité}
+
+Intuitivement, la prime pure associée aux coûts d'une ligne d'affaire (plusieurs contrats similaires) devrait correspondre à la valeur moyenne de ceux-ci. Dans ce qui suit, on justifie mathématiquement le fait qu'un chargement de sécurité est nécessaire pour que l'assureur puisse être sûr d'éviter une ruine, qui se traduit par une perte pour cette ligne d'affaire en question.
+
+\subsubsection{Probabilité de ruine}\label{proba_ruine}
+Se plaçant au début de l'année, l'assureur reçoit des primes commerciales pour les risques qu'il a accepté de couvrir. L'assureur devra être en mesure de régler les montants des sinistres réclamés par les assurés. On suppose que tous les contrats sont souscrits au premier janvier de l'année et que la couverture s'étend sur une année.
+\\
+Le résultat de l'assureur n'est rien d'autres que la différence entre les recettes, les dépenses et les produits financiers corrigés des frais de gestion. Soit $R$ le résultat de la compagnie d'assurance, alors
+\begin{equation}
+R=\text{P}_{total}-S_{total}+(PF-FG)\nonumber,
+\end{equation}
+avec
+\begin{itemize}
+\item ${P}_{total}$: la prime commerciale totale.
+\item $S_{total}$: la charge totale.
+\item $PF$: les produits financiers.
+\item $FG$: les frais de gestion.
+\end{itemize}
+Supposons qu'un portefeuille est constitué de N polices. Pour $i \in {1,...,N}$, soit $X_{i}$ les coûts engendrés par la $i^{ème}$ police, $X_{i}$ peut être nul. On a alors
+\begin{equation}
+S_{total}=\sum_{i=1}^{N} X_{i}.\nonumber
+\end{equation} 
+On introduit l'hypothèse que les variables aléatoires $X_{i}$ sont indépendantes et identiquement distribuées, toutes indépendantes de la variable aléatoire $N$. Cette hypothèse n'est pas toujours vérifiée en pratique mais avec un grand nombre de police N, la loi des grands nombres peut être généralisée à des variables homogènes et peu dépendantes.\\
+Sous cette hypothèse, posons
+\begin{center}
+$E[X_{i}]=\mu ~~,~~ Var[X_{i}]=\sigma_{X}^{2}$,
+\end{center} 
+pour $i \in {1,...,N}$.\\ 
+
+On a aussi
+\begin{equation*}
+P_{total}= \sum_{i=1}^{N} P_{i}^{'},
+\end{equation*}
+avec $P_{i}^{'}$ est la prime commerciale chargée à la $i^{ème}$ police pour $i \in {1,...,N}$.\\
+
+Reprenons la décomposition de la prime commerciale. On a
+\begin{equation}
+P^{'}=P+\alpha P +\frac{1}{N} FG, \nonumber
+\end{equation}
+avec
+\begin{itemize}
+\item $P^{'}$: la prime commerciale.
+\item $P$: la prime pure.
+\item $\alpha $: le taux de chargement de sécurité proportionnel à la prime pure. 
+\end{itemize}
+
+Dans l'éventualité d'écart entre la charge réelle et la charge probable, les chargements de sécurité viennent couvrir la sous estimation de la sinistralité.
+Ce chargement de sécurité joue donc un rôle primordial pour assureur la pérennité et la solvabilité de la compagnie d'assurance. \\
+
+Le principe de mutualisation consiste à demander à chaque assuré une prime $P=E[X]=\mu$.
+Définissons la charge moyenne comme 
+\begin{eqnarray}
+S_{moyen}&=&\frac{1}{N}\sum_{i=1}^{N}X_{i}.\nonumber \\
+\end{eqnarray}
+Son espérence est
+\begin{eqnarray}
+E[S_{moyen}]&=&E\left[\frac{1}{N}\sum_{i=1}^{N}X_{i}\right],\nonumber \\
+&=&\frac{1}{N}\sum_{i=1}^{N} \mu,\nonumber\\
+&=&\mu,\nonumber \\
+&=&P, \nonumber
+\end{eqnarray}
+et sa variance est
+\begin{eqnarray}
+Var[S_{moyen}]&=&Var[\frac{1}{N}\sum_{i=1}^{N}X_{i}],\nonumber\\
+&=&\frac{1}{N}\sigma_{X}^{2}.\nonumber
+\end{eqnarray}
+D'aprés la loi des grands nombres, on a 
+\begin{center}
+$S_{moyen} \sim N(P,\frac{1}{N}\sigma_{X}^{2})$,
+\end{center}
+donc
+\begin{center}
+$\sqrt{N}\frac{S_{moyen}-P}{\sigma_{X}} \sim N(0,1)$.
+\end{center}
+Soit K et R respectivement le capital initial de la compagnie d'assurance et son résultat. Supposons que les produits financiers de la compagnie sont nuls, on a ainsi
+\begin{center}
+$R+K=N(1+\alpha)P-N S_{moyen}+K$.
+\end{center}
+
+L'assureur cherchera au maximum d'éviter la situation où $R+K<0$, correspondant à une ruine. La probabilité de cette ruine, qu'on notera $\phi_n(K)$ est
+
+\begin{eqnarray}
+\phi_n(K) &=&P(R+K<0)\nonumber\\
+&=&P(R<-K)\nonumber\\
+&=&P(N(1+\alpha)P-N S_{moyen}<-K)\nonumber\\
+&=&P\left(S_{moyen}>\frac{K}{N}+(1+\alpha)P\right)\nonumber\\
+&=&P\left(\sqrt{N}\frac{S_{moyen}-P}{\sigma_{X}}>\frac{K+N\alpha}{\sqrt{N} \sigma_{X}}\right)\nonumber\\
+&=&1-\Phi\left(\frac{K+N\alpha}{\sqrt{N} \sigma_{X}}\right),
+\end{eqnarray}
+avec $\Phi()$ la fonction de répartition d'une loi normale centrée réduite.\\
+Soit $\Lambda=\frac{K+n\alpha}{\sqrt{N} \sigma_{X}}$ le coefficient de sécurité. On remarque que la probabilité de ruine est fonction de ce coefficient, qui est lui même fonction de la richesse initiale, le taux de chargement de sécurité et le nombre d'assurés.\\
+On peut ainsi conclure que toute chose égale par ailleurs la probabilité de ruine diminue si
+\begin{itemize}
+\item K augemente.
+\item $\alpha$ augmente.
+\item N augmente.
+\end{itemize}
+Une compagnie d’assurance dommages est soumise à un risque de fluctuation exceptionnelle de son résultat, et de défaillance au regard des engagements qu’elle a souscrits. Pour faire face à ce risque, l’assureur actionne un des leviers en modifiant chacun de ces paramètres se traduisant par une décision stratégique et commerciale de la compagnie.\\
+La compagnie doit fixer le paramètre de son
+système de sécurité en début de période dans le but d'assurer la solvabilité et la pérennité de l'entreprise.
+
+\subsubsection{Principes de calcul de la prime majorée}
+
+\noindent On note :
+\begin{itemize}
+\item $X$ : la variable aléatoire représentant les coûts engendrés par la ligne d'affaire;
+%\item $u$ : le capital alloué initialement à la ligne d'affaire du contrat;
+\item $\pi$ : la prime collectée pour un contrat de la ligne d'affaire;
+\item $\phi_n$ : la probabilité de ruine de l'assureur pour $n$ contrats de la ligne d'affaire, définie par
+\begin{equation}
+\phi_n = \mathbb{P} \left[ X > n\pi \right]
+\end{equation}
+\end{itemize}
+
+On reprend les notations en \ref{proba_ruine}, et on propose les résultats suivants :
+\begin{enumerate}
+\item si $P < \mathbb{E}[X]$, alors $\Lim{n \rightarrow \infty}\phi_n(0) = 1$
+\item si $P = \mathbb{E}[X]$, alors $\Lim{n \rightarrow \infty}\phi_n(0) = \frac{1}{2}$
+\item si $P > \mathbb{E}[X]$, alors $\Lim{n \rightarrow \infty}\phi_n(0) = 0$
+\end{enumerate}
+
+En d'autres termes, partant d'un capital initial nul, la ruine pour la ligne d'affaire considérée est certaine si l'on charge une prime inférieure à la valeur moyenne des coûts. Si on se contente de charger la valeur moyenne des coûts, subir ou éviter la ruine seraient deux scénarios équiprobables. Finalement, charger une prime supérieure à la valeur moyenne des coûts, appelée prime majorée, rend la ruine impossible pour l'assureur. Le fait de considérer un capital initial nul est sans perte de généralité, puisque la ruine pour un capital initial non nul correspond à une diminution de ce capital, cas dans lequel un assureur perdrait sa propre richesse.
+
+Il est cependant à noter que ces résultats ne sont vrais que pour des lignes d'affaires avec plusieurs contrats, qui forment un schéma de mutualisation des risques associés aux différentes polices.
+
+(référence)
+
+Le calcul de la prime majorée se fait selon plusieurs principes. L'utilisation de l'un ou l'autre de ces derniers est un choix que fait chaque assureur, qui doit respecter les exigences de solvabilité imposées par le régulateur. On cite quelques principes de calcul de la prime majorée :
+\begin{itemize}
+\item Principe de la valeur espérée : 
+\begin{equation*}
+\pi = (1+\kappa)\mathbb{E}[X], ~~ 0 < \kappa < 1
+\end{equation*}
+\item Principe de la variance : 
+\begin{equation*}
+\pi = \mathbb{E}[X] + \kappa\text{Var}(X), ~~ \kappa > 0
+\end{equation*}
+\item Principe de l'écart-type : 
+\begin{equation*}
+\pi = \mathbb{E}[X] + \kappa\sqrt{\text{Var}(X)}, ~~ \kappa > 0
+\end{equation*}
+\item Principe de la VaR : 
+\begin{equation*}
+\pi = \text{VaR}_\kappa(X), ~~ 0 < \kappa < 1
+\end{equation*}
+\item Principe de la TVaR : 
+\begin{equation*}
+\pi = \text{TVaR}_\kappa(X), ~~ 0 < \kappa < 1
+\end{equation*}
+\end{itemize} 
+
+On revoie le lecteur à \cite{marceau2013modelisation} pour plus de détails sur ces principes.
+
+\subsection{Tarification d'un nouveau produit}
+
+Lorsqu'il s'agit d'assurer un risque inconnu, l'assureur est amené à confectionner un produit innovant, en s'inspirant éventuellement d'un produit correspondant à un risque similaire ou en consultant des experts dans le domaine de ce risque. Toutefois, le fait que l'opinion que forgera l'assureur sur un nouveau risque est toujours sujette à une erreur qu'il ne peut pas maîtriser.
+
+Dans ce cas, selon le niveau d'appétit au risque de l'assureur, ce dernier pourrait choisir de prendre le risque d'assurer l'objet inconnu, et de couvrir le résultat par d'autres rendements de son portefeuille qu'il maîtrise bien. Ce schéma d'allocation de capital permet donc à l'assureur de franchir le pas du manque de connaissance vis-à-vis du risque et ainsi gagner de l'expérience quant à l'assurance de ce dernier. 
+
+\subsection{Considérations stratégiques}
+
+L'appétit pour le risque est un autre facteur qui définit la prime. L'assureur peut être agressif sur quelques produits d'assurance et conservateur sur d'autres selon son appétit au risque définit par sa stratégie. Cette stratégie est établie par les actionnaires et la direction de la compagnie afin de bien exercer son activité à long terme et garantir la pérennité de la compagnie. En effet, l'appétence au risque définit le modèle de gestion de risque qui permet de rencontrer les objectifs de rentabilité attendue du capital par les actionnaires et les normes de solvabilité imposées par la législation. Les compagnies d'assurance sont amenées à répondre aux attentes des actionnaires en mettant en place une gestion des risques à la fois responsable et suffisamment performante pour atteindre les objectifs stratégiques fixés, et aussi permettant de respecter les contraintes réglementaires en termes de capital.
+
+Dans \cite{AutoriteMarchesFinanciers}, on définit l'appétit au risque comme "le type et le niveau global de risque
+qu'une institution financière est prête à accepter pour l'atteinte de ses objectifs
+stratégiques et la réalisation de son plan d'affaire, le tout dans le respect de ses
+obligations envers ses assurés, déposants ou autres clients et de son capital disponible." Cette notion est au cœur du processus de gestion du risque des compagnies de l'industrie de l'assurance.\\
+Le risque étant la matière première de l'assurance, alors l'appétence au risque s'associe à une une enveloppe globale de ce dernier que l'entreprise accepte d'assumer afin de poursuivre son activité. L'appétit au risque est d'une importance primordiale puisque si la compagnie n'est pas trop averse au risque alors elle pourrait souscrire à des risques qu'elle ne peut pas supporter et couvrir financièrement car elle a dépassé sa capacité de prise de risque, elle se retrouve ainsi dans l'incapacité d'honorer ses engagements.\\
+Afin de bien formuler son appétence au risque, la compagnie d'assurance se doit de cartographier les risques auxquels elle est exposée et définir ainsi son profil de risque. L'appétence au risque est un outil stratégique qui doit être intégré au processus de pilotage de la compagnie.\\
+Le processus de détermination de l'appétit au risque peut être décrit par le schéma de la figure \ref{fig:appetit}\\
+
+\begin{figure}
+\begin{center}
+\smartdiagramadd[circular diagram:clockwise]{
+1. Évaluer la capacité du risque, 2. Déterminer l'appétit au risque, 3. Formaliser la politique globale de l'entreprise, 4. Décliner la tolérance au risque par ligne d'affaire, 5. Fixer les limites de risque, 6. Contrôle du risque et reporting au conseil d'administration
+}{}
+\caption{Processus de détermination de l'appétit au risque} \label{fig:appetit}
+\end{center}
+\end{figure}
+
+
+Une description détaillée de l'appétit pour le risque, la limite du risque et la tolérance du risque est présente dans (\cite{riskappetite}).\\
+Ainsi on remarque que la définition de l'appétence du risque n'est pas un exercice facile et représente une étape primordiale pour une gestion efficace du risque.\\
+Pour fixer l'appétit au risque et définir les limites et les capacités de prises de risque sans pour autant menacer la solvabilité de la compagnie, une synergie devrait se constituer entre les différentes parties de ce processus, chaque partie a son rôle à jouer et la réussite du processus dépend de l'implication de toute les parties. Les plus importants acteurs sont:
+\begin{itemize}
+\item \textbf{Le conseil d'administration} veille à assurer la pérennité de l'entreprise et verser les dividendes aux actionnaires. Il participe activement aux stratégies et politiques adoptées par l'entreprise en fonction de l'appétence du risque des actionnaires, en respect des normes édictées par le législateur. Il conseille les actionnaires au moment de fixer l'appétence au risque.
+\item \textbf{Le législateur} fixe les normes à respecter et émet des directives pour atteindre cet objectif. Son rôle est de veiller au respect des lois et normes par les compagnies d'assurance dans leur activité de prise risque. \\
+\item \textbf{Les actionnaires} ont des attentes vis-à-vis de la compagnie. En effet, ils sont toujours à la recherche de la maximisation de leur retour sur investissement  sans pour autant mettre la compagnie en danger. Ils sont ainsi responsable de définir l'appétence au risque de l'entreprise en consultation avec le conseil d'administration.
+\item \textbf{Les gestionnaires internes} sont là pour exécuter la politique adoptée par le conseil d'administration et les actionnaires. Ils recherchent une intégration adéquate du niveau de l'appétit au risque dans les fonctions de quantification et de gestion des risques. Ils peuvent inter-agir avec le conseil d'administration s'ils estiment que l'appétence au risque de la compagnie n'est pas en adéquation avec son capital.
+\end{itemize}
+
+Chaque partie prenante dans le processus de la formulation de l'appétence au risque de l'entreprise a une perspective différente vis-à-vis du risque et ciblera donc un objectif différent, ainsi toute partie s'intéressera à des indicateurs d'évaluation du risque, de performance et de solvabilité(\cite{link}).  La figure \ref{fig:interets} permet de schématiser les intérêts et les objectifs des différents acteurs
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=.75]{image3.png}
+\end{center}
+\caption{Intérêts et objectifs des acteurs d'une compagnie d'assurance}
+\label{fig:interets}
+\end{figure}
+
+\subsection{Assurer ou ne pas assurer : Utilité de l'assureur}
+
+On utilisera le terme "décideur" pour résumer toutes les parties prenantes dans la prise de décision stratégique au sein d'une compagnie d'assurance.
+
+Assurer ou non un risque dépend principalement du jugement du décideur qui apprécie, selon ses motivations et ses contraintes, une prise de risque pour un contrat donné. On considère l'exemple où un assureur, détenant un capital initial, doit choisir entre
+\begin{itemize}
+\item Garder son capital et ne pas assurer
+\item Accepter d'assurer, en collectant la prime et en assumant les pertes
+\end{itemize}
+Cette décision n'est pas prise de la même façon chez tous les décideurs, car l'appréciation d'un choix ou d'un autre est subjective. Ceci est une conséquence directe de la différence entre les objectifs et les ressources de chaque assureur.
+
+Pour quantifier cette appréciation, on utilise une fonction économique dite fonction d'utilité, qui permet d'évaluer le degré d'utilité de chaque grandeur économique pour un acteur donné. 
+
+Cette fonction, qu'on notera $u$, possède les propriétés suivantes :
+\begin{enumerate}[label=(\roman*)]
+\item $u$ est croissante :  $x<y \Rightarrow u(x)<u(y)$. Cela veut dire que la richesse supérieure est toujours plus appréciée;
+\item $u$ est concave :  $x<y \Rightarrow u'(x)>u'(y)$. On peut traduire cette propriété par le fait que, ayant deux richesses initiales, l'ajout d'une unité est plus apprécié pour celle qui est inférieure (par exemple, donner 1\$ est plus utile pour quelqu'un qui dispose de 10\$ que pour quelqu'un qui dispose de 100\$);
+\item $u$ vérifie l'inégalité dite de Jensen suivante :
+\begin{equation*}
+\mathbb{E}[u(Y)] \leq u\left(\mathbb{E}[Y]\right).
+\end{equation*}
+\end{enumerate}
+Cette inégalité d'aversion au risque veut, vu que l'espérance mathématique soit une quantité non aléatoire, que l'on préfère toujours un montant connu que de subir l'aléa d'une quantité inconnue.
+
+Ainsi, bien qu'assurer un risque présente une opportunité de réalisation de bénéfice pour la compagnie, il se peut que l'utilité de cette prise de risque ne soit pas meilleure que l'abstention d'assurer ce même risque, et cette utilité est définie uniquement par le décideur. 
+
+Cette situation se manifeste lorsqu'il s'agit d'assurer un risque non connu : Bien que l'assureur utilise des modèles pour évaluer le risque en question, il demeure incertain quant à la sur-évaluation ou la sous-évaluation de ce dernier. La décision d'assurer ce risque et d'espérer des bénéfices devient un gage pour le décideur, dicté par ses contraintes de rendements financiers et sa propre expérience. Ceci étant, les assureurs compensent ce gage en demandant des primes augmentées, justifiant la contrepartie de leur engagement dans des résultats aléatoires.
+
+\subsection{Opinion d'experts}
+
+Bien que la tarification des contrat d'assurance se base principalement sur une étude de l'historique des sinistres enregistrés pour une multitude de contrats similaires, l'assureur est parfois confronté à des risque nouveaux pour lesquels il ne dispose pas d'observations. Dans ce cas, les actuaires à eux seuls ne sauront parvenir à une prime adéquate pour ce risque là. 
+
+La technique qui convient le mieux à ce genre de situations est de solliciter l'avis d'experts ayant assez de connaissances sur le nouveau risque pour pouvoir estimer les coûts liés à ce dernier, d'une façon plus ou moins précise. La technique en question consiste à soumettre des questionnaires détaillés aux experts choisis, avec des questions totales (avec comme réponses oui ou non), des questions à échelle de réponse (ex. sur une échelle de 1 à 5, quelle serait l'éventualité d'occurrence d'un sinistre ?) ou des questions portants sur des fréquences ou des grandeurs (ex. pour telle catégorie, quel serait approximativement le coût d'un sinistre en cas de survenance).
+
+Il faut aussi souligner qu'il est nécessaire d'avoir une idée sur la crédibilité des experts choisis. La technique la plus courante étant de glisser dans les questionnaire des questions dont on connaît les réponses, et, suivant les réponses données par chaque expert, calculer un taux de crédibilité permettant d'ordonner ces experts selon leur degré de connaissance.
+
+Après avoir collecté les réponses voulues, on procède à une agrégation de ces réponses, reposant principalement sur une pondération des réponses par les taux de crédibilité prédéterminés. L'information à laquelle on aboutit finalement peut partiellement substituer les données non existantes, car l'erreur, ne serait ce que minime, des experts par rapport à l'observation de l'exposition au risque est inévitable.
+
+Pour une description plus détaillée de la méthodologie d'élicitation d'opinions des experts, on invite le lecteur à consulter \cite{cooke} et \cite{o'hagan}.
+
+\section{Le défi de la prime d'assurance des structures en bois laminé-croisé}
+
+\subsection{Assurabilité d'un chantier de construction}
+
+Le risque d'assurer un chantier de construction en bois laminé-croisé est jusqu'à maintenant considéré à faible fréquence et haute sévérité, puisque les mesures sécuritaires exigées par le Code National du Bâtiment, auxquelles s'ajoutent parfois d'autres exigences demandées par les assureurs, font que les sinistres dans un chantier soient assez rares. Aussi, vu que la majorité des projets de construction en bois laminé-croisé sont de grande taille, la sévérité d'un sinistre dans de tels chantiers (on parle principalement de l'incendie) serait, en cas d'occurrence, très grande.
+
+La couverture de ce type de chantiers nécessite, dans la plupart des cas, la participation de plusieurs intervenants : on parle d'un partage égalitaire du risque entre plusieurs assureurs dans un schéma de coassurance, ou encore la couverture du risque par un ou plusieurs assureurs avec cession d'une partie de ce même risque à un réassureur. Ces pratiques de partage de risque encouragent les assureurs à prendre le risque de s'engager dans des couvertures qui auraient été dangereuses pour chacun d'entre eux.
+
+
+\subsection{Classification des bâtiments}
+
+Comme mentionné dans \ref{tarification}, le calcul de la prime pour un chantier de construction en bois laminé-croisé est établi par prédiction des coûts que ce dernier occasionnerait en cas de sinistre, et que le modèle prédit à partir des valeurs et modalités des variables explicatives. 
+
+Parmi les variables en question, les assureurs en incorporent une caractérisant les types de matériaux utilisés dans cette construction. Cette variable est catégorique, et l'on doit choisir des classes pour celle-ci qui regrouperaient les matériaux les plus homogènes en termes de risque. Les assureurs ont abouti à la classification suivante :
+
+\begin{enumerate}
+
+\item	Résistant au feu
+ 
+Type de construction dans lequel la charpente, les murs porteurs, les planchers et le toit sont en maçonnerie ou en matériaux résistant au feu. La durée de résistance au feu doit être d'au moins 2 heures pour les planchers et les murs porteurs extérieurs, et d'une heure pour le toit.  Aucun acier non protégé dans les murs ou le toit.
+
+\item	Maçonnerie - incombustible 
+
+Type de construction dans lequel les murs sont en maçonnerie ou en matériaux ayant une durée de résistance au feu d'au moins deux heures, et dans lequel les planchers, le toit et leurs éléments porteurs sont en matériaux incombustibles.
+
+\item	Incombustible 
+
+Type de construction dans lequel les murs, les planchers, le toit et les éléments porteurs sont en matériaux incombustibles (incluant les constructions en acier sur acier) et dont l'isolation est de fibre minérale. 
+
+\item	Maçonnerie 
+
+Type de construction dans lequel les murs sont en maçonnerie ou en matériaux ayant une durée de résistance au feu d'au moins une heure, et dans lequel les planchers et le toit sont en matériaux combustibles. Font également partie de cette classe la construction ordinaire et la construction en gros bois d'œuvre.
+
+\item	Brique sur bois 
+
+Type de construction dans lequel les murs sont en matériaux combustibles revêtus, à l'extérieur, d'un parement de maçonnerie d'au moins 100 mm (4 pouces), et où les planchers et le toit sont en matériaux combustibles.
+
+\item	Bois  
+
+Type de construction dans lequel les murs extérieurs sont en matériaux combustibles ou incombustibles autres que Brique sur bois et où les planchers et le toit sont de construction combustible.
+\end{enumerate}
+
+Cette classification est principalement établie en fonction de la gravité des pertes pouvant être causées par un incendie. elle est un peu similaire à celle figurant dans le Code International du bâtiment \cite{IBC}.
+
+Le bois laminé-croisé, étant du gros bois d'œuvre, est classé chez les assureurs en 4-ième catégorie. Celle-ci est la meilleure en termes de risque d'incendie pour les bâtiments ayant des planchers et des toits en matériaux combustibles. 
+
+\subsection{Problème de manque de données}
+
+Les projets canadiens de construction en bois laminé-croisé rencontrent principalement le problème de manque de données, du fait que l'utilisation de ce matériau soit assez récente.
+
+L'enjeu d'aboutir à une juste prime pour un type de construction dépend positivement du volume de données d'assurance dont on dispose. En conséquence, lorsqu'il s'agit d'assurer un chantier, l'assureur est plus à l'aise avec les projets à structure courante, puisque l'exposition liée à ce profil de risque serait plus facile à étudier. Or lorsqu'il est question d'attribuer une prime au chantier d'un projet dont la taille, l'utilité particulière ou la technologie de construction sort du commun, l'estimation de la sinistralité de ce dernier à partir de l'historique sera peu précise, vu que l'on aurait observé un nombre limité de projets semblables à celui-ci. 
+
+Substituer les données de sinistralité d'un type de structure par des cas semblables contournerait difficilement ce problème, car même si on arrive à vérifier un grand nombre de similarités, on ferait toujours face à des effets qu'on ne pourrait pas maîtriser, ou même dont en ignorerait l'existence. Deux exemple de données candidates à remplacer les données de sinistralité sur le terrain sont les tests expérimentaux conduits pour vérifier la conformité de la résistance d'éléments de structure aux norme exigées par le code du bâtiment, ainsi que l'exploitation des données de sinistralité du même profil de risque mais venant d'autres pays (pays européens pour le cas du bois laminé-croisé). Ces deux exemples seront détaillés en \ref{tests_euro}.
+
+En conséquent, bien que ce marché embryonnaire tenterait plusieurs compagnies d'assurance, le choix de la prudence serait la décision saine à prendre pour éviter que ce risque, encore inconnu, occasionne des pertes inattendues. En effet, la majorité des praticiens de l'assurance préconisent d'opter pour une collecte volumineuse de données, suffisante pour conduire des analyses concluantes, avant de s'aventurer dans une prise de part d'un marché non encore maîtrisé.
+
+
+\subsection{Tests et données européennes}
+\label{tests_euro}
+Une étude expérimentale, conduite par le Conseil national de recherches Canada en collaboration avec FPInnovations, a abouti à des performances satisfaisantes des structures en bois laminé-croisé. En effet, à la lumière des résultats exposés dans \cite{CLThandbook}, les composante d'un bâtiment en bois laminé-croisé réussissent à passer les tests de résistance structurale et d'isolation prescrits selon la norme CAN/ULC S101 relative à la résistance au feu pour bâtiments et matériaux de construction. 
+
+
+Bien que ces tests reproduisent des scénarios d'incendie assez similaires aux sinistres relatifs à ce même risque dans les chantiers,  l'assureur n'est pas en mesure de cerner l'erreur de ces tests du fait que la collecte d'une telle information lui serait coûteuse. L'assureur se préserve donc d'attribuer une crédibilité totale aux résultats expérimentaux portés sur le bois laminé-croisé, tant que ce dernier n'a pas été suffisamment mis à l'épreuve dans les conditions réelles d'un chantier de construction.
+
+\subsection{Coûts de remplacement}
+
+Dans le rapport \cite{cecobois}, on affirme que les structures en bois sont généralement plus économiques que celles en métal. En effet, il est cité que le gros bois d'œuvre ne nécessite pas de finition intérieure pour avoir une résistance au feu conforme à celle exigée par le Code National du Bâtiment, contrairement aux charpentes métalliques nécessitant une protection supplémentaires pour rencontrer cette même exigence. 
+
+Toutefois, Jean-Pierre Bonneville \cite{entrevue_intact}, met l'accent sur deux défauts majeurs du bois : 
+\begin{itemize}
+\item Après un incendie, le bois aurait calciné en surface, entraînant des coûts de remplacement élevés, contrairement à ce qu'on aurait  observé pour le béton;
+\item Face à des conditions météorologiques difficiles (par exemple une charge pluviale importante), le bois exposé dans un chantier absorbera beaucoup d'eau et aura du mal à sécher, ce qui exposerait le matériau en question aux moisissures.   
+\end{itemize}
+
+
+
+
+\section{Recommandations}
+
+\subsection{Générateur de scénarios d'incendie (CUrisk)}
+
+Il existe des logiciels de générateur de scénario d’incendie qui sont basés sur une large et exhaustive appréhension du comportement du feu. 
+
+À titre d'exemple, Carleton University a élaboré un logiciel de générateur de scénarios, basé sur plusieurs sous modèles : propagation du feu, croissance du feu, mouvement de la fumée, réponse des occupants, analyse du risque vie et analyse des dégâts occasionnées au bâtiment. 
+
+Dans les études de cas \cite{zhang2015case} et \cite{hadji}, CUrisk a permis de générer plusieurs scénarios qui sont des combinaisons des caractéristiques du bâtiment à savoir les informations concernant les murs, les planchers, les portes et les fenêtres. Des informations concernant la présence ou non des gicleurs et le temps de réponse des pompiers peuvent aussi être insérer dans les inputs. Chaque scénario est initié par le choix du design de l'incendie (endroit d'initiation, heure d'initiation, etc.), puis le sous-modèle de croissance du feu permet de prédire les conditions de la propagation du feu dans les autres compartiments. Ensuite, les sous-modèles de mouvement de la fumée et de propagation du feu servent à calculer la probabilité de propagation du feu vers les autres compartiments. Les informations relatives au bâtiment sont ensuite introduites dans les autres sous-modèles qui nous informent sur le risque de perte humaine et les coûts occasionnés par le sinistre au bâtiment.
+
+Ce logiciel de générateur de scénario peut être utilisé par les assureurs pour remédier au problème de manque de données. Il est vraisemblable que ce modèle ne capte pas toute l'information présente dans un vrai incendie, mais plusieurs sous-modèles utilisés ont été testés et validés avec des données réelles disponibles dans la littérature. Par exemple, les sous-modèles de mouvement de la fumée et de propagation du feu ont été validés par (voir case studies risk life due to fire, combustible ans non-combustible, Carleton university). Ceci dit, d'après \cite{xin2013fire}, les pertes humaines estimées par CUrisk ont été comparées aux données réelles d'incendie en Ontario et aucun écart notable n'a été observé. 
+
+Nous recommandons fortement aux promoteurs et aux chercheurs du domaine du bois de s’inspirer du CUrisk, de l’adopter et puis de l’adapter au contexte québécois afin de fournir plutôt des tests quantifiant les pertes financières occasionnées au bâtiment et non pas des tests s’assurant du respect des normes du code du bâtiment. Ce contraste de perspective est dû à la fonction objective qui est complètement différentes entres les assureurs (perspective de pertes financières) et la régie du bâtiment (perspective de pertes humaines).
+
+\begin{center}
+\includegraphics[scale=.75]{curisk.png}
+\captionof{figure}{Fire risk analysis model CURisk}
+\end{center}
+
+
+\subsection{Étude NFPA}
+Dans le but de cerner le risque lié aux structures en CLT, la National Fire Protection Association aux États-Unis en collaboration avec la Property Insurance Research Group \cite{pirggroup} ont commandité un projet \cite{FPRF}, pour quantifier la contribution des panneaux en CLT dans la croissance et la propagation du feu dans un bâtiment et fournir ainsi des données pour pouvoir comparer la performance du système de construction en CLT vis-à-vis des autres systèmes de construction utilisés dans les bâtiments de grande hauteur.
+
+Cette étude sera effectuée conjointement par la National Research Council (NRC) Canada et la Research Institute of Sweden (RISE). L’étude fournira de nouveaux éléments pour améliorer l’appréhension et la prévention du risque et établir de nouvelles normes de sécurité incendie dans un bâtiment en CLT. De nouveaux tests de performance seront élaborés et appliqués au panneau en CLT avec différentes enveloppes afin de prédire au mieux le comportement du CLT lors d'un incendie et enrichir par-là la littérature déjà existante sur ce sujet. Ces tests seront conduits au National Fire Research Laboratory à la National Institute of Standards and Technology (NIST) et un rapport sera publié dans le premier trimestre 2018.
+
+Cette implication du groupement d'assureurs \cite{PIRG} dans ce projet témoigne de l'intérêt des assureurs américains à mieux cerner et appréhender le risque lié aux structures en CLT de grande hauteur. Vu que ce nouveau matériel de construction utilisé en Amérique du Nord présente des caractéristiques robustes en termes de comportement et réponse vis-à-vis des différents périls, ces assureurs ont jugé nécessaire de lancer cette étude afin de mieux quantifier et tarifer le risque inhérent au CLT en attendant d'observer sa vraie sinistralité. Avec l'enthousiasme et l'engouement des gouvernements pour la construction écoresponsable, en l'occurrence les tours de grandes hauteurs en bois massif, ces assureurs ont eu la bienveillance de lancer des études approfondies sur ce nouveau risque non encore maitrisé en Amérique du Nord, dans le but d'être plus à l'aise par la suite avec ce type de matériau.
+
+\subsection{Tests de coûts de reconstruction après incendie}
+
+Jusqu'à présent, tous les tests expérimentaux qui ont été faits sur le bois laminé-croisé ont globalement porté sur la performance d'un bâtiment (ou de ses composantes) intégrant du CLT, pour rencontrer les normes sécuritaires exigées dans le Code National du bâtiment. Cette même performance a fait l'objet d'études de cas, notamment celles dans \cite{zhang2015case} et \cite{encapsulated}, pour consolider les résultats des tests expérimentaux. Or un assureur serait directement intéressé à savoir les coûts qu'un chantier pourrait occasionner suite à un incendie, afin de mieux cerner l'aléa lié à ce risque.
+
+Une piste serait d'envisager un autre type de test, soit une simulation d'un incendie porté aux éléments d'un chantier CLT, avec comme objectif le recensement des coûts de reconstruction de ce dernier. Cela permettrait à l'assureur d'enrichir ses bases de données avec des observations assez similaires d'exposition de chantiers à l'incendie, pouvant l'encourager à augmenter son appétence pour ce risque.
+
+\section{Conclusion}
+
+Un grand travail d’investigation a été effectué auprès de différents acteurs du domaine de l’assurance. Une seule conclusion en ressort, en effet toutes les personnes contactées ont confirmé que les deux principaux handicaps du CLT sont la taille du marché et l’absence de données quant à sa sinistralité.  Par conséquent l’assureur ne se voit pas contraint à reparamétrisé son modèle de tarification afin d’introduire une classe à part entière pour le CLT et le classe logiquement dans la catégorie la plus proche définie dans le code du bâtiment.
+Les données de sinistralité du CLT au Canada ne peuvent être substituées par d’autres sources à cause de l’asymétrie d’information engendrée par des aspects intrinsèques au marché canadien, citant à titre d’exemple le climat et le code du bâtiment. Le cas contraire, l’assureur court un risque d’antisélection qui pourrait engendrer des pertes financières inattendues.
+Les assureurs contactés estiment que la prime commerciale proposée est adéquate au risque transféré et ne sont ainsi pas prêt à faire diminuer cette dernière. A cet effet, les intervenants dans l’écosystème du CLT devront patienter le temps nécessaire pour observer le comportement réel de ce matériau au Canada avant de s’attendre à une révision du tarif. À moins que le marché du CLT se développe de plus en plus au point où les assureurs se retrouvent obligés de revoir leurs considérations stratégiques et faire une étude exhaustive sur sa sinistralité afin d’éviter une perte d’une part conséquente de ce marché.
+
+\newpage
+\section*{Bibliographie}
+\addcontentsline{toc}{section}{\protect\numberline{}Bibliographie}
+
+\bibliographystyle{apalike}
+\bibliography{ref}
+
+\end{document}
